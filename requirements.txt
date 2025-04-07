@@ -1,0 +1,27 @@
+# Data processing and ETL
+pandas
+numpy
+nltk
+
+# NLP and model fine-tuning
+transformers
+datasets
+accelerate
+torch
+
+# API development
+fastapi
+uvicorn
+
+# Web interface (Streamlit)
+streamlit
+requests
+
+# Optional: For sentiment analysis (if added later)
+vaderSentiment
+chromadb
+langchain_groq
+langchain_core
+langchain_community
+python-dotenv
+bs4
