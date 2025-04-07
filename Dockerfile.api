@@ -1,4 +1,3 @@
-# Dockerfile.api
 FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED=1
@@ -7,13 +6,14 @@ ENV PYTHONPATH=/app
 
 WORKDIR /app
 
-# Use explicit relative path
-COPY ./requirements.txt .
-
+# Copy only the requirements file and install dependencies, then remove pip cache
+COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt && rm -rf /root/.cache/pip
 
-# Copy the rest of the repository
-COPY . .
+# Copy the necessary project files
+COPY src/ src/
+COPY my_portfolio.csv .
+COPY generate_email.py .
 
 EXPOSE 8080
 
