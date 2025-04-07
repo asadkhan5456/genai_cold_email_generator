@@ -17,22 +17,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker images using docker-compose
+      - name: Clean up Docker resources
+        run: docker system prune -af
+
+      - name: Build Docker images using Docker Compose
         run: docker compose -f docker-compose.yml build
 
-      - name: Start containers with docker-compose
+      - name: Start containers with Docker Compose
         run: |
-          docker-compose -f docker-compose.yml up -d
+          docker compose -f docker-compose.yml up -d
           sleep 15  # Wait for containers to start
 
       - name: Test API endpoint
         run: |
-          # Check that the API container is running by querying the root endpoint.
           curl --fail http://localhost:8080/ || exit 1
 
       - name: Shut down containers
-        run: docker-compose -f docker-compose.yml down
-
-      - name: Clean up disk space
-        run: sudo rm -rf /tmp/*
-
+        run: docker compose -f docker-compose.yml down
