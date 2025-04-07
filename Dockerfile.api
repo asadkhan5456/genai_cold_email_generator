@@ -1,19 +1,31 @@
-FROM python:3.9-slim
-
-ENV PYTHONUNBUFFERED=1
-ENV USER_AGENT="Mozilla/5.0 (compatible; GenAIColdEmailBot/1.0; +http://yourdomain.com)"
-ENV PYTHONPATH=/app
+# Stage 1: Build stage
+FROM python:3.9-slim as builder
 
 WORKDIR /app
 
-# Copy only the requirements file and install dependencies, then remove pip cache
+# Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt && rm -rf /root/.cache/pip
 
-# Copy the necessary project files
+# Copy only the source code needed
 COPY src/ src/
 COPY my_portfolio.csv .
 COPY generate_email.py .
+
+# Stage 2: Production stage
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Set PYTHONPATH so that /app/src is recognized
+ENV PYTHONPATH=/app/src
+ENV USER_AGENT="Mozilla/5.0 (compatible; GenAIColdEmailBot/1.0; +http://yourdomain.com)"
+
+# Copy only the installed packages and necessary files from the builder
+COPY --from=builder /usr/local/lib/python3.9/site-packages/ /usr/local/lib/python3.9/site-packages/
+COPY --from=builder /app/src/ src/
+COPY --from=builder /app/my_portfolio.csv .
+COPY --from=builder /app/generate_email.py .
 
 EXPOSE 8080
 
