@@ -11,7 +11,7 @@ WORKDIR /app/src
 
 # Copy only the requirements and install dependencies
 COPY requirements.txt /app/
-RUN pip install --upgrade pip && pip install -r /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt && rm -rf /root/.cache/pip
 
 # Copy the contents of the src folder into /app/src
 COPY src/ ./ 
