@@ -1,28 +1,20 @@
 # Dockerfile.api
 FROM python:3.9-slim
 
-# Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV USER_AGENT="Mozilla/5.0 (compatible; GenAIColdEmailBot/1.0; +http://yourdomain.com)"
-ENV PYTHONPATH=/app/src
+ENV PYTHONPATH=/app
 
-# Set working directory to /app/src
-WORKDIR /app/src
+WORKDIR /app
 
-# Copy only the requirements and install dependencies
-COPY requirements.txt /app/
+# Use explicit relative path
+COPY ./requirements.txt .
+
 RUN pip install --upgrade pip && pip install -r requirements.txt && rm -rf /root/.cache/pip
 
-# Copy the contents of the src folder into /app/src
-COPY src/ ./ 
+# Copy the rest of the repository
+COPY . .
 
-# Optionally copy additional required files (like my_portfolio.csv, generate_email.py, etc.)
-COPY my_portfolio.csv /app/
-COPY generate_email.py /app/
-
-# Expose the port your FastAPI app runs on
 EXPOSE 8080
 
-# Start the FastAPI application using uvicorn.
-# Notice we now reference the module as "api.app:app" because our working directory is /app/src.
-CMD ["uvicorn", "api.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "src/api/app:app", "--host", "0.0.0.0", "--port", "8080"]
