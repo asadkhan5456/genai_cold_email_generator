@@ -1,5 +1,7 @@
 # Cold Email Generator – AIKHAN
 
+> **Note:** This is an older learning project (2025) and is no longer actively maintained.
+
 *A comprehensive solution that extracts job details from a careers page URL and generates personalized cold emails using advanced NLP techniques, containerized with Docker and automated via CI/CD.*
 
 ---
@@ -101,39 +103,63 @@ Below is a screenshot of the **Streamlit app**:
     Business Development Executive  
     AIKHAN
    
-### Project Setup
+## Project Setup
+
+### Requirements
+
+- Python 3.9+
+- A Groq API key (https://console.groq.com)
+
+### Configuration
+
+The API key is read from the environment, never from the code. Copy the example file and add your key:
+
+```bash
+cp .env.example .env
+# then edit .env and set GROQ_API_KEY=...
+```
+
+`GROQ_MODEL` is optional. The default model name may have been retired by Groq since this project was written; if requests fail, set `GROQ_MODEL` to a model listed in the Groq console.
 
 ### Local Setup
 
-1. **Clone the Repository:**
+1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/genai_cold_email_generator.git
+   git clone https://github.com/asadkhan5456/genai_cold_email_generator.git
    cd genai_cold_email_generator
+   ```
 
-2. **Install Dependencies:**
+2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
+   ```
 
-3. **Run the API Locally:**
+3. **Run the API:**
    ```bash
-   uvicorn src/api/app:app --host 0.0.0.0 --port 8080 --reload
-- Visit http://localhost:8080 to verify the API.
+   cd src && uvicorn api.app:app --host 0.0.0.0 --port 8080 --reload
+   ```
+   Visit http://localhost:8080 to check that the API is running.
 
-4. **Run the Streamlit UI:**
+4. **Run the Streamlit UI** (in a second terminal):
    ```bash
    streamlit run src/ui/streamlit_app.py
-- Access the UI at http://localhost:8501.
+   ```
+   Open http://localhost:8501.
 
-### Containerization 
+The ChromaDB `vectorstore/` folder is created automatically from `my_portfolio.csv` on first run and is not committed.
 
-1. **Build and Run with Docker Compose:**
-   ```bash
-   docker-compose up --build
-- The API is available at http://localhost:8080 and the UI at http://localhost:8501.
+### Docker Compose
 
-### CI/CD Integration
+```bash
+export GROQ_API_KEY=...   # or put it in .env next to docker-compose.yml
+docker compose up --build
+```
 
-- A GitHub Actions workflow (.github/workflows/docker_build.yml) is configured to automatically build your Docker images, run tests, and verify that the containers are accessible on every push or pull request.
+The API is available at http://localhost:8080 and the UI at http://localhost:8501.
+
+### CI and tests
+
+There is no unit-test suite. The GitHub Actions workflow (`.github/workflows/docker_build.yml`) builds the images, starts the containers and checks that the API root endpoint responds.
 
 ### License
 
@@ -143,6 +169,3 @@ This project is licensed under the MIT License.
 ### Contributors
 
 **Asad Faiyyaz Khan**
-
-**By integrating advanced data engineering, NLP, vector search, containerization, and CI/CD, this project demonstrates a complete, 
-production-ready pipeline for generating personalized, domain-specific cold emails..**
