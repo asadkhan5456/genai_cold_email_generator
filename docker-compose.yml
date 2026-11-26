@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.2-90b-vision-preview}
     ports:
       - "8080:8080"
   ui:

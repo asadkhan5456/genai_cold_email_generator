@@ -1,8 +1,12 @@
+import os
 import uuid
 import chromadb
 import pandas as pd
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ------------------------------
 # 1. Setup Portfolio Vector Store
@@ -53,10 +57,13 @@ print("Retrieved portfolio links:", link_list)
 # ------------------------------
 # 4. Generate the Cold Email Using a Prompt Template
 # ------------------------------
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    raise SystemExit("GROQ_API_KEY is not set. Copy .env.example to .env and add your key.")
 llm = ChatGroq(
     temperature=0,
-    groq_api_key="REDACTED",  # Replace with your valid API key
-    model_name="llama-3.2-90b-vision-preview"       # Use the supported model name
+    groq_api_key=api_key,
+    model_name=os.getenv("GROQ_MODEL", "llama-3.2-90b-vision-preview"),
 )
 
 # Define a prompt template that includes our additional fields.

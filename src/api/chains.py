@@ -8,13 +8,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DEFAULT_MODEL = "llama-3.2-90b-vision-preview"
+
+
+def build_llm():
+    """Create the Groq chat model from environment variables (see .env.example)."""
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise RuntimeError("GROQ_API_KEY is not set. Copy .env.example to .env and add your key.")
+    return ChatGroq(
+        temperature=0,
+        groq_api_key=api_key,
+        model_name=os.getenv("GROQ_MODEL", DEFAULT_MODEL),
+    )
+
 class Chain:
     def __init__(self):
-        self.llm = ChatGroq(
-            temperature=0,
-            groq_api_key= "your-key-here",
-            model_name="llama-3.2-90b-vision-preview"
-        )
+        self.llm = build_llm()
 
     def extract_jobs(self, cleaned_text):
         prompt_extract = PromptTemplate.from_template(
@@ -67,4 +77,4 @@ class Chain:
         return res.content
 
 if __name__ == "__main__":
-    print(os.getenv("GROQ_API_KEY"))
+    print("GROQ_API_KEY set:", bool(os.getenv("GROQ_API_KEY")))

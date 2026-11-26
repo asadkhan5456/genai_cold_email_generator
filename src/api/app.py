@@ -57,8 +57,15 @@ def get_portfolio_links(query_text: str) -> str:
             flat_links.append(sub)
     return ", ".join([item.get("links", "") for item in flat_links])
 
-# --- Initialize the Chain and LLM ---
-chain = Chain()
+# --- Initialize the Chain and LLM lazily, so the API starts without a key ---
+_chain = None
+
+
+def get_chain() -> Chain:
+    global _chain
+    if _chain is None:
+        _chain = Chain()
+    return _chain
 
 # New endpoint: Extract Job from URL
 @app.post("/extract_job")
@@ -71,7 +78,7 @@ def extract_job(request: ExtractJobRequest):
         page_data = loaded_docs.pop().page_content
         # Clean the text if needed (optional)
         cleaned_text = re.sub(r'\s+', ' ', page_data).strip()
-        jobs = chain.extract_jobs(cleaned_text)
+        jobs = get_chain().extract_jobs(cleaned_text)
         # Return the first extracted job (for simplicity)
         if not jobs:
             raise ValueError("No job details extracted.")
@@ -97,7 +104,7 @@ def generate_email(request: EmailRequest):
         retrieved_links = get_portfolio_links(skills)
         link_list = retrieved_links if retrieved_links else request.portfolio_link
         
-        email_content = chain.write_mail(
+        email_content = get_chain().write_mail(
             job={
                 "role": role,
                 "experience": experience,
